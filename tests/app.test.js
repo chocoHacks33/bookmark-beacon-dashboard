@@ -5,7 +5,9 @@ const {
   bookmarkCardMarkup,
   bookmarks,
   collectionMarkup,
+  daysSince,
   formatDate,
+  getStaleBookmarks,
   summarizeBookmarks,
   summarizeCollections,
 } = require("../app.js");
@@ -50,4 +52,30 @@ test("collection progress exposes an accessible value", () => {
 
 test("saved dates are rendered without local timezone drift", () => {
   assert.equal(formatDate("2026-11-16"), "16 Nov 2026");
+});
+
+test("stale-link audit uses UTC calendar days and a strict age threshold", () => {
+  const today = new Date("2026-11-17T18:00:00+08:00");
+
+  assert.equal(daysSince("2026-11-16", today), 1);
+  assert.deepEqual(
+    getStaleBookmarks(bookmarks, today).map(({ id }) => id),
+    ["focus-systems", "web-performance"],
+  );
+  assert.equal(
+    getStaleBookmarks(
+      [{ ...bookmarks[0], lastCheckedOn: "2026-10-03" }],
+      today,
+    ).length,
+    0,
+  );
+});
+
+test("stale bookmarks receive a visible review label", () => {
+  const markup = bookmarkCardMarkup(
+    bookmarks.find(({ id }) => id === "web-performance"),
+    new Date("2026-11-17T00:00:00Z"),
+  );
+
+  assert.match(markup, /Needs link review/);
 });
