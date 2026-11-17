@@ -7,6 +7,7 @@ const bookmarks = [
     collection: "Design",
     tags: ["accessibility", "color"],
     savedOn: "2026-11-16",
+    lastCheckedOn: "2026-11-16",
     read: false,
     favorite: true,
   },
@@ -18,6 +19,7 @@ const bookmarks = [
     collection: "Development",
     tags: ["javascript", "architecture"],
     savedOn: "2026-11-15",
+    lastCheckedOn: "2026-11-14",
     read: true,
     favorite: false,
   },
@@ -29,6 +31,7 @@ const bookmarks = [
     collection: "Product",
     tags: ["writing", "planning"],
     savedOn: "2026-11-13",
+    lastCheckedOn: "2026-10-28",
     read: false,
     favorite: false,
   },
@@ -40,6 +43,7 @@ const bookmarks = [
     collection: "Productivity",
     tags: ["focus", "habits"],
     savedOn: "2026-11-11",
+    lastCheckedOn: "2026-09-12",
     read: false,
     favorite: true,
   },
@@ -51,6 +55,7 @@ const bookmarks = [
     collection: "Design",
     tags: ["data", "visualization"],
     savedOn: "2026-11-08",
+    lastCheckedOn: "2026-11-08",
     read: true,
     favorite: true,
   },
@@ -62,6 +67,7 @@ const bookmarks = [
     collection: "Development",
     tags: ["performance", "web"],
     savedOn: "2026-11-02",
+    lastCheckedOn: "2026-08-20",
     read: false,
     favorite: false,
   },
@@ -95,8 +101,21 @@ function summarizeCollections(items) {
     .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
 }
 
-function bookmarkCardMarkup(bookmark) {
+function daysSince(dateString, today = new Date()) {
+  const start = Date.parse(`${dateString}T00:00:00Z`);
+  const end = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate());
+  return Math.max(0, Math.floor((end - start) / 86_400_000));
+}
+
+function getStaleBookmarks(items, today = new Date(), maxAgeDays = 45) {
+  return items.filter(
+    (bookmark) => daysSince(bookmark.lastCheckedOn, today) > maxAgeDays,
+  );
+}
+
+function bookmarkCardMarkup(bookmark, today = new Date()) {
   const status = bookmark.read ? "Read" : "Unread";
+  const needsReview = getStaleBookmarks([bookmark], today).length > 0;
   const favorite = bookmark.favorite
     ? '<span class="favorite" aria-label="Favorite bookmark">★</span>'
     : "";
@@ -107,6 +126,7 @@ function bookmarkCardMarkup(bookmark) {
         <div class="bookmark-meta">
           <span>${bookmark.collection}</span>
           <span>${status}</span>
+          ${needsReview ? '<span class="review-status">Needs link review</span>' : ""}
         </div>
         <h3><a href="${bookmark.url}">${bookmark.title}</a></h3>
         <p class="domain">${bookmark.domain}</p>
@@ -151,10 +171,12 @@ function collectionMarkup(items) {
 
 function renderDashboard(items = bookmarks) {
   const summary = summarizeBookmarks(items);
+  const staleBookmarks = getStaleBookmarks(items);
   document.querySelector("#bookmark-count").textContent = summary.total;
   document.querySelector("#unread-count").textContent = summary.unread;
   document.querySelector("#collection-count").textContent = summary.collections;
   document.querySelector("#favorite-count").textContent = summary.favorites;
+  document.querySelector("#stale-count").textContent = staleBookmarks.length;
   document.querySelector("#library-count").textContent = `${summary.total} links`;
   document.querySelector("#bookmark-list").innerHTML = items
     .map(bookmarkCardMarkup)
@@ -171,7 +193,9 @@ if (typeof module !== "undefined") {
     bookmarkCardMarkup,
     bookmarks,
     collectionMarkup,
+    daysSince,
     formatDate,
+    getStaleBookmarks,
     summarizeBookmarks,
     summarizeCollections,
   };
