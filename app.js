@@ -95,6 +95,14 @@ function summarizeCollections(items) {
     .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
 }
 
+function filterByCollection(items, collection) {
+  if (!collection || collection === "all") {
+    return [...items];
+  }
+
+  return items.filter((bookmark) => bookmark.collection === collection);
+}
+
 function bookmarkCardMarkup(bookmark) {
   const status = bookmark.read ? "Read" : "Unread";
   const favorite = bookmark.favorite
@@ -164,6 +172,17 @@ function renderDashboard(items = bookmarks) {
 
 if (typeof document !== "undefined") {
   renderDashboard();
+
+  const collectionFilter = document.querySelector("#collection-filter");
+  summarizeCollections(bookmarks).forEach(({ name }) => {
+    const option = document.createElement("option");
+    option.value = name;
+    option.textContent = name;
+    collectionFilter.append(option);
+  });
+  collectionFilter.addEventListener("change", (event) => {
+    renderDashboard(filterByCollection(bookmarks, event.target.value));
+  });
 }
 
 if (typeof module !== "undefined") {
@@ -171,6 +190,7 @@ if (typeof module !== "undefined") {
     bookmarkCardMarkup,
     bookmarks,
     collectionMarkup,
+    filterByCollection,
     formatDate,
     summarizeBookmarks,
     summarizeCollections,
