@@ -220,6 +220,34 @@ h1 {
   font-weight: 800;
 }
 
+.library-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: -4px 0 18px;
+  padding: 13px 15px;
+  border-radius: 14px;
+  background: var(--wash);
+}
+
+.library-controls label {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.library-controls select {
+  min-width: 170px;
+  padding: 9px 34px 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.83rem;
+}
+
 .bookmark-list {
   display: grid;
   gap: 12px;

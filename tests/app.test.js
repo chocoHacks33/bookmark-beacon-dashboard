@@ -5,6 +5,7 @@ const {
   bookmarkCardMarkup,
   bookmarks,
   collectionMarkup,
+  filterByCollection,
   formatDate,
   summarizeBookmarks,
   summarizeCollections,
@@ -50,4 +51,19 @@ test("collection progress exposes an accessible value", () => {
 
 test("saved dates are rendered without local timezone drift", () => {
   assert.equal(formatDate("2026-11-16"), "16 Nov 2026");
+});
+
+test("collection filter narrows the library without mutating it", () => {
+  const design = filterByCollection(bookmarks, "Design");
+
+  assert.deepEqual(
+    design.map((bookmark) => bookmark.id),
+    ["accessible-color", "data-story"],
+  );
+  assert.equal(bookmarks.length, 6);
+  assert.notStrictEqual(filterByCollection(bookmarks, "all"), bookmarks);
+});
+
+test("unknown collections return an empty library", () => {
+  assert.deepEqual(filterByCollection(bookmarks, "Missing"), []);
 });
