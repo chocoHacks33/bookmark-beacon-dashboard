@@ -4,7 +4,9 @@ const assert = require("node:assert/strict");
 const {
   bookmarkCardMarkup,
   bookmarks,
+  buildBookmarkCsv,
   collectionMarkup,
+  escapeCsvCell,
   formatDate,
   summarizeBookmarks,
   summarizeCollections,
@@ -50,4 +52,22 @@ test("collection progress exposes an accessible value", () => {
 
 test("saved dates are rendered without local timezone drift", () => {
   assert.equal(formatDate("2026-11-16"), "16 Nov 2026");
+});
+
+test("CSV export includes every bookmark and a stable header", () => {
+  const lines = buildBookmarkCsv(bookmarks).split("\r\n");
+
+  assert.equal(lines.length, bookmarks.length + 1);
+  assert.equal(
+    lines[0],
+    '"title","url","domain","collection","tags","status","favorite","saved_on"',
+  );
+  assert.match(lines[1], /"accessibility; color"/);
+  assert.match(lines[1], /"Unread","Yes","2026-11-16"$/);
+});
+
+test("CSV cells escape quotes and neutralize spreadsheet formulas", () => {
+  assert.equal(escapeCsvCell('A "quoted" title'), '"A ""quoted"" title"');
+  assert.equal(escapeCsvCell("=HYPERLINK(\"bad\")"), '"\'=HYPERLINK(""bad"")"');
+  assert.equal(escapeCsvCell("+1-555-0100"), '"\'+1-555-0100"');
 });
