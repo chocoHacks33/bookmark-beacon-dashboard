@@ -95,6 +95,25 @@ function summarizeCollections(items) {
     .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
 }
 
+function searchBookmarks(items, query) {
+  const normalizedQuery = query.trim().toLocaleLowerCase();
+  if (!normalizedQuery) {
+    return [...items];
+  }
+
+  return items.filter((bookmark) => {
+    const searchableText = [
+      bookmark.title,
+      bookmark.domain,
+      bookmark.collection,
+      ...bookmark.tags,
+    ]
+      .join(" ")
+      .toLocaleLowerCase();
+    return searchableText.includes(normalizedQuery);
+  });
+}
+
 function bookmarkCardMarkup(bookmark) {
   const status = bookmark.read ? "Read" : "Unread";
   const favorite = bookmark.favorite
@@ -156,14 +175,18 @@ function renderDashboard(items = bookmarks) {
   document.querySelector("#collection-count").textContent = summary.collections;
   document.querySelector("#favorite-count").textContent = summary.favorites;
   document.querySelector("#library-count").textContent = `${summary.total} links`;
-  document.querySelector("#bookmark-list").innerHTML = items
-    .map(bookmarkCardMarkup)
-    .join("");
+  document.querySelector("#bookmark-list").innerHTML = items.length
+    ? items.map(bookmarkCardMarkup).join("")
+    : '<p class="empty-library">No saved links match that search.</p>';
   document.querySelector("#collection-list").innerHTML = collectionMarkup(items);
 }
 
 if (typeof document !== "undefined") {
   renderDashboard();
+
+  document.querySelector("#bookmark-search").addEventListener("input", (event) => {
+    renderDashboard(searchBookmarks(bookmarks, event.target.value));
+  });
 }
 
 if (typeof module !== "undefined") {
@@ -172,6 +195,7 @@ if (typeof module !== "undefined") {
     bookmarks,
     collectionMarkup,
     formatDate,
+    searchBookmarks,
     summarizeBookmarks,
     summarizeCollections,
   };
