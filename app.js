@@ -95,6 +95,38 @@ function summarizeCollections(items) {
     .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
 }
 
+function summarizeTags(items, limit = 5) {
+  const counts = items.flatMap((bookmark) => bookmark.tags).reduce((summary, tag) => {
+    summary[tag] = (summary[tag] || 0) + 1;
+    return summary;
+  }, {});
+
+  return Object.entries(counts)
+    .map(([tag, count]) => ({ tag, count }))
+    .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag))
+    .slice(0, limit);
+}
+
+function tagInsightMarkup(items) {
+  const tags = summarizeTags(items);
+  const largestCount = tags[0]?.count || 1;
+
+  return tags
+    .map(({ tag, count }) => {
+      const width = Math.round((count / largestCount) * 100);
+      return `
+        <div class="tag-row" aria-label="#${tag}: ${count} saved ${count === 1 ? "link" : "links"}">
+          <span class="tag-row__label">#${tag}</span>
+          <span class="tag-row__track" aria-hidden="true">
+            <span style="width: ${width}%"></span>
+          </span>
+          <span class="tag-row__count">${count}</span>
+        </div>
+      `;
+    })
+    .join("");
+}
+
 function bookmarkCardMarkup(bookmark) {
   const status = bookmark.read ? "Read" : "Unread";
   const favorite = bookmark.favorite
@@ -160,6 +192,7 @@ function renderDashboard(items = bookmarks) {
     .map(bookmarkCardMarkup)
     .join("");
   document.querySelector("#collection-list").innerHTML = collectionMarkup(items);
+  document.querySelector("#tag-insight-list").innerHTML = tagInsightMarkup(items);
 }
 
 if (typeof document !== "undefined") {
@@ -174,6 +207,8 @@ if (typeof module !== "undefined") {
     formatDate,
     summarizeBookmarks,
     summarizeCollections,
+    summarizeTags,
+    tagInsightMarkup,
   };
 }
 

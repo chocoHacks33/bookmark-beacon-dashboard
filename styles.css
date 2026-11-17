@@ -337,6 +337,70 @@ h1 {
   background: var(--accent);
 }
 
+.tag-insight {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+
+.tag-insight__heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.tag-insight__heading strong {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.tag-insight__heading span {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.tag-insight-list {
+  display: grid;
+  gap: 11px;
+}
+
+.tag-row {
+  display: grid;
+  grid-template-columns: minmax(80px, auto) 1fr auto;
+  align-items: center;
+  gap: 9px;
+  font-size: 0.76rem;
+}
+
+.tag-row__label {
+  overflow: hidden;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tag-row__track {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #edf2ef;
+}
+
+.tag-row__track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+}
+
+.tag-row__count {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
 .review-card {
   display: flex;
   gap: 13px;
