@@ -95,6 +95,51 @@ function summarizeCollections(items) {
     .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
 }
 
+function escapeCsvCell(value) {
+  let text = String(value ?? "");
+  if (/^[=+\-@\t\r]/.test(text)) {
+    text = `'${text}`;
+  }
+  return `"${text.replaceAll('"', '""')}"`;
+}
+
+function buildBookmarkCsv(items) {
+  const headers = [
+    "title",
+    "url",
+    "domain",
+    "collection",
+    "tags",
+    "status",
+    "favorite",
+    "saved_on",
+  ];
+  const rows = items.map((bookmark) => [
+    bookmark.title,
+    bookmark.url,
+    bookmark.domain,
+    bookmark.collection,
+    bookmark.tags.join("; "),
+    bookmark.read ? "Read" : "Unread",
+    bookmark.favorite ? "Yes" : "No",
+    bookmark.savedOn,
+  ]);
+
+  return [headers, ...rows]
+    .map((row) => row.map(escapeCsvCell).join(","))
+    .join("\r\n");
+}
+
+function downloadBookmarksCsv(items) {
+  const csv = buildBookmarkCsv(items);
+  const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "bookmark-beacon-library.csv";
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
 function bookmarkCardMarkup(bookmark) {
   const status = bookmark.read ? "Read" : "Unread";
   const favorite = bookmark.favorite
@@ -164,13 +209,18 @@ function renderDashboard(items = bookmarks) {
 
 if (typeof document !== "undefined") {
   renderDashboard();
+  document
+    .querySelector("#export-bookmarks")
+    .addEventListener("click", () => downloadBookmarksCsv(bookmarks));
 }
 
 if (typeof module !== "undefined") {
   module.exports = {
     bookmarkCardMarkup,
     bookmarks,
+    buildBookmarkCsv,
     collectionMarkup,
+    escapeCsvCell,
     formatDate,
     summarizeBookmarks,
     summarizeCollections,
