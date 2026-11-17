@@ -14,4 +14,3 @@ npm run check
 ```
 
 The starter data lives in `app.js`, so the dashboard is easy to adapt without a backend.
-

@@ -84,7 +84,6 @@ function summarizeBookmarks(items) {
     collections: new Set(items.map((bookmark) => bookmark.collection)).size,
   };
 }
-
 function summarizeCollections(items) {
   const counts = items.reduce((summary, bookmark) => {
     summary[bookmark.collection] = (summary[bookmark.collection] || 0) + 1;
