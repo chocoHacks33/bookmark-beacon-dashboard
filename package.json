@@ -1,0 +1,11 @@
+{
+  "name": "bookmark-beacon-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A dependency-free dashboard for keeping useful links organized.",
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check app.js && node --check tests/app.test.js"
+  }
+}
+
