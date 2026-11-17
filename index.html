@@ -66,7 +66,19 @@
                 <p class="eyebrow">Saved recently</p>
                 <h2>Your bookmark library</h2>
               </div>
-              <span id="library-count" class="count-pill">0 links</span>
+              <span id="library-count" class="count-pill" aria-live="polite">0 links</span>
+            </div>
+            <div class="search-field">
+              <label for="bookmark-search">Search saved links</label>
+              <div class="search-field__input">
+                <span aria-hidden="true">⌕</span>
+                <input
+                  id="bookmark-search"
+                  type="search"
+                  placeholder="Title, collection, domain, or tag"
+                  autocomplete="off"
+                />
+              </div>
             </div>
             <div id="bookmark-list" class="bookmark-list"></div>
           </div>

@@ -6,6 +6,7 @@ const {
   bookmarks,
   collectionMarkup,
   formatDate,
+  searchBookmarks,
   summarizeBookmarks,
   summarizeCollections,
 } = require("../app.js");
@@ -50,4 +51,25 @@ test("collection progress exposes an accessible value", () => {
 
 test("saved dates are rendered without local timezone drift", () => {
   assert.equal(formatDate("2026-11-16"), "16 Nov 2026");
+});
+
+test("search matches titles, collections, domains, and tags", () => {
+  assert.deepEqual(searchBookmarks(bookmarks, "FOCUS").map(({ id }) => id), [
+    "focus-systems",
+  ]);
+  assert.equal(searchBookmarks(bookmarks, "Development").length, 2);
+  assert.deepEqual(searchBookmarks(bookmarks, "visualization").map(({ id }) => id), [
+    "data-story",
+  ]);
+  assert.deepEqual(searchBookmarks(bookmarks, "fastpages").map(({ id }) => id), [
+    "web-performance",
+  ]);
+});
+
+test("blank search returns a new copy and unmatched text returns no results", () => {
+  const results = searchBookmarks(bookmarks, "   ");
+
+  assert.deepEqual(results, bookmarks);
+  assert.notStrictEqual(results, bookmarks);
+  assert.deepEqual(searchBookmarks(bookmarks, "not-in-this-library"), []);
 });
