@@ -301,6 +301,47 @@ h1 {
   font-size: 1.15rem;
 }
 
+.bookmark-actions {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.copy-link {
+  min-height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: white;
+  color: var(--accent-dark);
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.copy-link:hover {
+  border-color: #a9c7b7;
+  background: var(--accent-soft);
+}
+
+.copy-link:focus-visible {
+  outline: 3px solid var(--accent-soft);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .bookmark-card time {
   color: var(--muted);
   font-size: 0.75rem;

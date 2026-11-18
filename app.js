@@ -115,7 +115,16 @@ function bookmarkCardMarkup(bookmark) {
         </div>
       </div>
       <div class="bookmark-card__aside">
-        ${favorite}
+        <div class="bookmark-actions">
+          ${favorite}
+          <button
+            class="copy-link"
+            type="button"
+            data-copy-url="${bookmark.url}"
+            data-bookmark-title="${bookmark.title}"
+            aria-label="Copy link to ${bookmark.title}"
+          >Copy link</button>
+        </div>
         <time datetime="${bookmark.savedOn}">${formatDate(bookmark.savedOn)}</time>
       </div>
     </article>
@@ -149,6 +158,19 @@ function collectionMarkup(items) {
     .join("");
 }
 
+async function copyBookmarkLink(url, clipboard) {
+  if (!clipboard?.writeText) {
+    return false;
+  }
+
+  try {
+    await clipboard.writeText(url);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function renderDashboard(items = bookmarks) {
   const summary = summarizeBookmarks(items);
   document.querySelector("#bookmark-count").textContent = summary.total;
@@ -164,6 +186,20 @@ function renderDashboard(items = bookmarks) {
 
 if (typeof document !== "undefined") {
   renderDashboard();
+  document.querySelector("#bookmark-list").addEventListener("click", async (event) => {
+    const button = event.target.closest("[data-copy-url]");
+    if (!button) {
+      return;
+    }
+
+    const copied = await copyBookmarkLink(
+      button.dataset.copyUrl,
+      navigator.clipboard,
+    );
+    document.querySelector("#copy-status").textContent = copied
+      ? `Copied link to ${button.dataset.bookmarkTitle}.`
+      : "Copy is not available in this browser.";
+  });
 }
 
 if (typeof module !== "undefined") {
@@ -171,6 +207,7 @@ if (typeof module !== "undefined") {
     bookmarkCardMarkup,
     bookmarks,
     collectionMarkup,
+    copyBookmarkLink,
     formatDate,
     summarizeBookmarks,
     summarizeCollections,
