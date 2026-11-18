@@ -95,6 +95,20 @@ function summarizeCollections(items) {
     .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
 }
 
+function sortBookmarks(items, order = "newest") {
+  return [...items].sort((a, b) => {
+    if (order === "title") {
+      return a.title.localeCompare(b.title);
+    }
+
+    const direction = order === "oldest" ? 1 : -1;
+    return (
+      a.savedOn.localeCompare(b.savedOn) * direction ||
+      a.title.localeCompare(b.title)
+    );
+  });
+}
+
 function bookmarkCardMarkup(bookmark) {
   const status = bookmark.read ? "Read" : "Unread";
   const favorite = bookmark.favorite
@@ -149,14 +163,17 @@ function collectionMarkup(items) {
     .join("");
 }
 
-function renderDashboard(items = bookmarks) {
+function renderDashboard(items = bookmarks, sortOrder = "newest") {
   const summary = summarizeBookmarks(items);
   document.querySelector("#bookmark-count").textContent = summary.total;
   document.querySelector("#unread-count").textContent = summary.unread;
   document.querySelector("#collection-count").textContent = summary.collections;
   document.querySelector("#favorite-count").textContent = summary.favorites;
   document.querySelector("#library-count").textContent = `${summary.total} links`;
-  document.querySelector("#bookmark-list").innerHTML = items
+  document.querySelector("#bookmark-list").innerHTML = sortBookmarks(
+    items,
+    sortOrder,
+  )
     .map(bookmarkCardMarkup)
     .join("");
   document.querySelector("#collection-list").innerHTML = collectionMarkup(items);
@@ -164,6 +181,9 @@ function renderDashboard(items = bookmarks) {
 
 if (typeof document !== "undefined") {
   renderDashboard();
+  document.querySelector("#bookmark-sort").addEventListener("change", (event) => {
+    renderDashboard(bookmarks, event.target.value);
+  });
 }
 
 if (typeof module !== "undefined") {
@@ -172,6 +192,7 @@ if (typeof module !== "undefined") {
     bookmarks,
     collectionMarkup,
     formatDate,
+    sortBookmarks,
     summarizeBookmarks,
     summarizeCollections,
   };

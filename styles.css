@@ -220,6 +220,36 @@ h1 {
   font-weight: 800;
 }
 
+.library-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin: -8px 0 18px;
+}
+
+.library-toolbar label {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.library-toolbar select {
+  min-height: 38px;
+  padding: 0 34px 0 11px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.82rem;
+}
+
+.library-toolbar select:focus-visible {
+  outline: 3px solid var(--accent-soft);
+  outline-offset: 2px;
+}
+
 .bookmark-list {
   display: grid;
   gap: 12px;
@@ -403,6 +433,11 @@ footer {
 
   .panel {
     padding: 18px;
+  }
+
+  .library-toolbar {
+    align-items: stretch;
+    flex-direction: column;
   }
 
   .bookmark-card {

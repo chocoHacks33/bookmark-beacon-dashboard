@@ -6,6 +6,7 @@ const {
   bookmarks,
   collectionMarkup,
   formatDate,
+  sortBookmarks,
   summarizeBookmarks,
   summarizeCollections,
 } = require("../app.js");
@@ -50,4 +51,35 @@ test("collection progress exposes an accessible value", () => {
 
 test("saved dates are rendered without local timezone drift", () => {
   assert.equal(formatDate("2026-11-16"), "16 Nov 2026");
+});
+
+test("bookmarks can be sorted without mutating the library", () => {
+  const originalOrder = bookmarks.map(({ id }) => id);
+
+  assert.deepEqual(
+    sortBookmarks(bookmarks, "oldest").map(({ id }) => id),
+    [
+      "web-performance",
+      "data-story",
+      "focus-systems",
+      "writing-briefs",
+      "browser-storage",
+      "accessible-color",
+    ],
+  );
+  assert.deepEqual(
+    sortBookmarks(bookmarks, "title").map(({ id }) => id),
+    [
+      "web-performance",
+      "accessible-color",
+      "browser-storage",
+      "data-story",
+      "focus-systems",
+      "writing-briefs",
+    ],
+  );
+  assert.deepEqual(
+    bookmarks.map(({ id }) => id),
+    originalOrder,
+  );
 });
