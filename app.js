@@ -149,6 +149,24 @@ function collectionMarkup(items) {
     .join("");
 }
 
+function pickUnreadBookmark(items, randomValue = Math.random()) {
+  const unread = items.filter((bookmark) => !bookmark.read);
+  if (!unread.length) {
+    return null;
+  }
+
+  const safeRandom = Math.min(Math.max(randomValue, 0), 0.999999999);
+  return unread[Math.floor(safeRandom * unread.length)];
+}
+
+function recommendationMarkup(bookmark) {
+  if (!bookmark) {
+    return "Everything is read. Your queue is clear!";
+  }
+
+  return `Try <a href="${bookmark.url}">${bookmark.title}</a> from ${bookmark.collection}.`;
+}
+
 function renderDashboard(items = bookmarks) {
   const summary = summarizeBookmarks(items);
   document.querySelector("#bookmark-count").textContent = summary.total;
@@ -164,6 +182,11 @@ function renderDashboard(items = bookmarks) {
 
 if (typeof document !== "undefined") {
   renderDashboard();
+  document.querySelector("#pick-unread").addEventListener("click", () => {
+    const recommendation = pickUnreadBookmark(bookmarks);
+    document.querySelector("#recommendation-result").innerHTML =
+      recommendationMarkup(recommendation);
+  });
 }
 
 if (typeof module !== "undefined") {
@@ -172,6 +195,8 @@ if (typeof module !== "undefined") {
     bookmarks,
     collectionMarkup,
     formatDate,
+    pickUnreadBookmark,
+    recommendationMarkup,
     summarizeBookmarks,
     summarizeCollections,
   };

@@ -6,6 +6,8 @@ const {
   bookmarks,
   collectionMarkup,
   formatDate,
+  pickUnreadBookmark,
+  recommendationMarkup,
   summarizeBookmarks,
   summarizeCollections,
 } = require("../app.js");
@@ -50,4 +52,28 @@ test("collection progress exposes an accessible value", () => {
 
 test("saved dates are rendered without local timezone drift", () => {
   assert.equal(formatDate("2026-11-16"), "16 Nov 2026");
+});
+
+test("unread recommendations only select from the waiting queue", () => {
+  assert.equal(pickUnreadBookmark(bookmarks, 0).id, "accessible-color");
+  assert.equal(pickUnreadBookmark(bookmarks, 0.999).id, "web-performance");
+});
+
+test("recommendation markup links to the selected bookmark", () => {
+  const bookmark = pickUnreadBookmark(bookmarks, 0.5);
+  const markup = recommendationMarkup(bookmark);
+
+  assert.match(markup, new RegExp(bookmark.title));
+  assert.match(markup, new RegExp(`href="${bookmark.url}"`));
+  assert.match(markup, new RegExp(bookmark.collection));
+});
+
+test("a completed library gets a clear recommendation message", () => {
+  const completed = bookmarks.map((bookmark) => ({ ...bookmark, read: true }));
+
+  assert.equal(pickUnreadBookmark(completed, 0.5), null);
+  assert.equal(
+    recommendationMarkup(null),
+    "Everything is read. Your queue is clear!",
+  );
 });
