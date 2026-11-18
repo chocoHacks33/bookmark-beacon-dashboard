@@ -149,6 +149,10 @@ function collectionMarkup(items) {
     .join("");
 }
 
+function printDashboard(printPage) {
+  printPage();
+}
+
 function renderDashboard(items = bookmarks) {
   const summary = summarizeBookmarks(items);
   document.querySelector("#bookmark-count").textContent = summary.total;
@@ -164,6 +168,9 @@ function renderDashboard(items = bookmarks) {
 
 if (typeof document !== "undefined") {
   renderDashboard();
+  document.querySelector("#print-library").addEventListener("click", () => {
+    printDashboard(() => window.print());
+  });
 }
 
 if (typeof module !== "undefined") {
@@ -172,6 +179,7 @@ if (typeof module !== "undefined") {
     bookmarks,
     collectionMarkup,
     formatDate,
+    printDashboard,
     summarizeBookmarks,
     summarizeCollections,
   };

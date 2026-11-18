@@ -1,11 +1,14 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const {
   bookmarkCardMarkup,
   bookmarks,
   collectionMarkup,
   formatDate,
+  printDashboard,
   summarizeBookmarks,
   summarizeCollections,
 } = require("../app.js");
@@ -50,4 +53,27 @@ test("collection progress exposes an accessible value", () => {
 
 test("saved dates are rendered without local timezone drift", () => {
   assert.equal(formatDate("2026-11-16"), "16 Nov 2026");
+});
+
+test("print control delegates to the browser print function", () => {
+  let printCalls = 0;
+  printDashboard(() => {
+    printCalls += 1;
+  });
+
+  assert.equal(printCalls, 1);
+});
+
+test("dashboard includes a print control and print stylesheet", () => {
+  const index = fs.readFileSync(path.join(__dirname, "..", "index.html"), "utf8");
+  const styles = fs.readFileSync(
+    path.join(__dirname, "..", "styles.css"),
+    "utf8",
+  );
+
+  assert.match(index, /id="print-library"/);
+  assert.match(index, /Bookmark Beacon library report/);
+  assert.match(styles, /@media print/);
+  assert.match(styles, /break-inside: avoid/);
+  assert.match(styles, /@page/);
 });
