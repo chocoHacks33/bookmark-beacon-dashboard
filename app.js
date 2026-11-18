@@ -149,6 +149,30 @@ function collectionMarkup(items) {
     .join("");
 }
 
+function readingProgressMarkup(items) {
+  const readCount = items.filter((bookmark) => bookmark.read).length;
+  const total = items.length;
+  const percentage = total ? Math.round((readCount / total) * 100) : 0;
+
+  return `
+    <div class="reading-progress__heading">
+      <strong>Reading progress</strong>
+      <span>${percentage}% complete</span>
+    </div>
+    <div
+      class="reading-progress__track"
+      role="progressbar"
+      aria-label="${readCount} of ${total} bookmarks read"
+      aria-valuemin="0"
+      aria-valuemax="${total}"
+      aria-valuenow="${readCount}"
+    >
+      <span style="width: ${percentage}%"></span>
+    </div>
+    <p>${readCount} read · ${total - readCount} waiting</p>
+  `;
+}
+
 function renderDashboard(items = bookmarks) {
   const summary = summarizeBookmarks(items);
   document.querySelector("#bookmark-count").textContent = summary.total;
@@ -160,6 +184,8 @@ function renderDashboard(items = bookmarks) {
     .map(bookmarkCardMarkup)
     .join("");
   document.querySelector("#collection-list").innerHTML = collectionMarkup(items);
+  document.querySelector("#reading-progress").innerHTML =
+    readingProgressMarkup(items);
 }
 
 if (typeof document !== "undefined") {
@@ -172,6 +198,7 @@ if (typeof module !== "undefined") {
     bookmarks,
     collectionMarkup,
     formatDate,
+    readingProgressMarkup,
     summarizeBookmarks,
     summarizeCollections,
   };

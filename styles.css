@@ -337,6 +337,44 @@ h1 {
   background: var(--accent);
 }
 
+.reading-progress {
+  margin-top: 26px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+}
+
+.reading-progress__heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+  font-size: 0.87rem;
+}
+
+.reading-progress__heading span,
+.reading-progress p {
+  color: var(--muted);
+}
+
+.reading-progress__track {
+  height: 9px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #edf2ef;
+}
+
+.reading-progress__track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--gold);
+}
+
+.reading-progress p {
+  margin: 8px 0 0;
+  font-size: 0.76rem;
+}
+
 .review-card {
   display: flex;
   gap: 13px;

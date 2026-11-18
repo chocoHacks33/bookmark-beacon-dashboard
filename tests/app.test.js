@@ -6,6 +6,7 @@ const {
   bookmarks,
   collectionMarkup,
   formatDate,
+  readingProgressMarkup,
   summarizeBookmarks,
   summarizeCollections,
 } = require("../app.js");
@@ -50,4 +51,22 @@ test("collection progress exposes an accessible value", () => {
 
 test("saved dates are rendered without local timezone drift", () => {
   assert.equal(formatDate("2026-11-16"), "16 Nov 2026");
+});
+
+test("reading progress reports a percentage and accessible values", () => {
+  const markup = readingProgressMarkup(bookmarks);
+
+  assert.match(markup, /33% complete/);
+  assert.match(markup, /2 of 6 bookmarks read/);
+  assert.match(markup, /aria-valuemax="6"/);
+  assert.match(markup, /aria-valuenow="2"/);
+  assert.match(markup, /2 read · 4 waiting/);
+});
+
+test("empty libraries render zero reading progress", () => {
+  const markup = readingProgressMarkup([]);
+
+  assert.match(markup, /0% complete/);
+  assert.match(markup, /aria-valuemax="0"/);
+  assert.doesNotMatch(markup, /NaN/);
 });
