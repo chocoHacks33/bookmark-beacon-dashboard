@@ -5,6 +5,7 @@ const {
   bookmarkCardMarkup,
   bookmarks,
   collectionMarkup,
+  copyBookmarkLink,
   formatDate,
   summarizeBookmarks,
   summarizeCollections,
@@ -39,6 +40,8 @@ test("bookmark card includes useful metadata", () => {
   assert.match(markup, /Design/);
   assert.match(markup, /#accessibility/);
   assert.match(markup, /Favorite bookmark/);
+  assert.match(markup, /data-copy-url="https:\/\/example.com\/accessible-color"/);
+  assert.match(markup, /Copy link to A practical guide to accessible color/);
 });
 
 test("collection progress exposes an accessible value", () => {
@@ -50,4 +53,28 @@ test("collection progress exposes an accessible value", () => {
 
 test("saved dates are rendered without local timezone drift", () => {
   assert.equal(formatDate("2026-11-16"), "16 Nov 2026");
+});
+
+test("copy link writes the bookmark URL to the clipboard", async () => {
+  let copiedText = "";
+  const clipboard = {
+    async writeText(value) {
+      copiedText = value;
+    },
+  };
+
+  assert.equal(await copyBookmarkLink(bookmarks[0].url, clipboard), true);
+  assert.equal(copiedText, bookmarks[0].url);
+});
+
+test("copy link reports unavailable and rejected clipboards", async () => {
+  assert.equal(await copyBookmarkLink(bookmarks[0].url, undefined), false);
+  assert.equal(
+    await copyBookmarkLink(bookmarks[0].url, {
+      async writeText() {
+        throw new Error("permission denied");
+      },
+    }),
+    false,
+  );
 });
