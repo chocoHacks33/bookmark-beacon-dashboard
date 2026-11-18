@@ -125,6 +125,40 @@ h1 {
   font-weight: 700;
 }
 
+.hero-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: end;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.print-button {
+  min-height: 40px;
+  padding: 0 15px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--accent-dark);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.print-button:hover {
+  background: var(--accent-soft);
+}
+
+.print-button:focus-visible {
+  outline: 3px solid var(--accent-soft);
+  outline-offset: 2px;
+}
+
+.print-note {
+  display: none;
+}
+
 .pulse {
   width: 9px;
   height: 9px;
@@ -385,7 +419,7 @@ footer {
   }
 
   .header-note,
-  .hero-badge {
+  .hero-actions {
     display: none;
   }
 
@@ -413,5 +447,79 @@ footer {
     min-width: 0;
     flex-direction: row-reverse;
     align-items: center;
+  }
+}
+
+@media print {
+  @page {
+    margin: 14mm;
+  }
+
+  :root {
+    color-scheme: light;
+  }
+
+  body {
+    min-width: 0;
+    background: white;
+  }
+
+  .shell {
+    width: 100%;
+  }
+
+  .site-header {
+    padding: 0 0 14px;
+  }
+
+  .header-note,
+  .hero-actions,
+  .review-card,
+  footer {
+    display: none;
+  }
+
+  .hero {
+    padding: 28px 0 20px;
+  }
+
+  h1 {
+    max-width: none;
+    font-size: 34pt;
+  }
+
+  .print-note {
+    display: block;
+    margin-bottom: 14px;
+    color: var(--muted);
+    font-size: 9pt;
+  }
+
+  .metrics {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .metric-card,
+  .panel,
+  .bookmark-card {
+    break-inside: avoid;
+    box-shadow: none;
+  }
+
+  .metric-card {
+    min-height: 0;
+    padding: 14px;
+  }
+
+  .content-grid {
+    grid-template-columns: minmax(0, 1.9fr) minmax(220px, 0.8fr);
+  }
+
+  .panel {
+    padding: 18px;
+  }
+
+  .bookmark-card h3 a {
+    text-decoration-color: currentColor;
   }
 }
